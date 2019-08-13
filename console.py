@@ -42,9 +42,30 @@ class HBNBCommand(cmd.Cmd):
             if not line:
                 raise SyntaxError()
             my_list = line.split(" ")
+            dict_tmp = {}
+            for iter in range(1, len(my_list)):
+                new_list = my_list[iter].split("=")
+                if(isinstance(new_list[0], str)):
+                    if(type(eval(new_list[1])) == int or
+                       type(eval(new_list[1])) == float or
+                       type(eval(new_list[1])) == str):
+                        str1 = new_list[0].replace("_", " ")
+                        str2 = new_list[1].replace("_", " ")
+                        dict_tmp.update({str1: eval(str2)})
             obj = eval("{}()".format(my_list[0]))
             obj.save()
             print("{}".format(obj.id))
+            objects = storage.all()
+            key = my_list[0] + '.' + obj.id
+            if key not in objects:
+                raise KeyError()
+            v = objects[key]
+            for key, value in dict_tmp.items():
+                try:
+                    v.__dict__[key] = eval(value)
+                except Exception:
+                    v.__dict__[key] = value
+                    v.save()
         except SyntaxError:
             print("** class name missing **")
         except NameError:
