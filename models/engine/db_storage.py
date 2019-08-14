@@ -36,3 +36,16 @@ class DBStorage():
             states = session.query(User, State, City, Amenity, Place, Review).all()
         tmp_dict2.update({:})
         return
+
+    def new(self, obj):
+        """add object to current database session"""
+        self.__session.add(obj)
+
+    def save(self):
+        """commit all changes the current database session"""
+        self.__session.commit()
+
+    def delete(self, obj=None):
+        """delete from current database session"""
+        if obj:
+            self.__session .delete() 
