@@ -2,9 +2,7 @@
 """This is the state class"""
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy import create_engine
 
 
 class State(BaseModel, Base):
@@ -13,10 +11,15 @@ class State(BaseModel, Base):
         name: input name
     """
     __tablename__ = 'states'
-    name = Column('name', String(128), nullable=False)
-    cities = relationship('City',
-                        cascade='all, delete', backref='state')
+    name = Column(String(128), nullable=False)
+    cities = relationship("City",
+                          cascade="all, delete-orphan", backref="state")
 
     @property
     def cities(self):
-        return self.cities.state_id
+        dict_tmp = models.storage.all(models.City)
+        list_tmp = []
+        for key, value in dict_tmp.items():
+            if value.state_id == self.id:
+                list_tmp.append(value)
+        return list_tmp

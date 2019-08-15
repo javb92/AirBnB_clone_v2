@@ -53,20 +53,10 @@ class HBNBCommand(cmd.Cmd):
                         str2 = new_list[1].replace("_", " ")
                         dict_tmp.update({new_list[0]: eval(str2)})
             obj = eval("{}()".format(my_list[0]))
+            for key, value in dict_tmp.items():
+                setattr(obj, key, value)
             obj.save()
             print("{}".format(obj.id))
-            if(len(dict_tmp) > 0):
-                objects = storage.all()
-                key = my_list[0] + '.' + obj.id
-                if key not in objects:
-                    raise KeyError()
-                v = objects[key]
-                for key, value in dict_tmp.items():
-                    try:
-                        v.__dict__[key] = eval(value)
-                    except Exception:
-                        v.__dict__[key] = value
-                        v.save()
         except SyntaxError:
             print("** class name missing **")
         except NameError:
