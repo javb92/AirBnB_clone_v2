@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 """This is the place class"""
-from models.base_model import BaseModel
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
+from sqlalchemy.orm import relationship
 
 
-class Place(BaseModel):
+class Place(BaseModel, Base):
     """This is the class for Place
     Attributes:
         city_id: city id
@@ -18,14 +20,27 @@ class Place(BaseModel):
         longitude: longitude in float
         amenity_ids: list of Amenity ids
     """
-    city_id = ""
-    user_id = ""
-    name = ""
-    description = ""
-    number_rooms = 0
-    number_bathrooms = 0
-    max_guest = 0
-    price_by_night = 0
-    latitude = 0.0
-    longitude = 0.0
-    amenity_ids = []
+    __tablename__ = "places"
+    city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
+    user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
+    name = Column(String(128), nullable=False)
+    description = Column(String(1024), nullable=True)
+    number_rooms = Column(Integer, nullable=False)
+    number_bathrooms = Column(Integer, nullable=False)
+    max_guest = Column(Integer, nullable=False)
+    price_by_night = Column(Integer, nullable=False)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=False)
+    reviews = relationship("Review",
+                           cascade="all, delete-orphan", backref="place")
+
+    @property
+    def reviews(self):
+        """getter
+        """
+        dict_tmp = models.storage.all(models.Review)
+        list_tmp = []
+        for key, value in dict_tmp:
+            if value.place_id == self.id:
+                list_tmp.append(value)
+        return list_tmp

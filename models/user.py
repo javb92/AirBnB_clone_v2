@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
 
-class User(BaseModel):
+class User(BaseModel, Base):
     """This is the class for user
     Attributes:
         email: email address
@@ -20,3 +20,5 @@ class User(BaseModel):
     last_name = Column(String(128), nullable=False)
     places = relationship("Place",
                           cascade="all, delete-orphan", backref="user")
+    reviews = relationship("Review",
+                           cascade="all, delete-orphan", backref="user")
