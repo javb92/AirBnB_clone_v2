@@ -4,6 +4,12 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
 from sqlalchemy.orm import relationship
 
+place_amenity = Table('place_amenity', Base.metadata,
+                        Column('place_id', String(60), ForeignKey('places.id'),
+                                primary_key=True, nullable=False),
+                        Column('amenity_id', String(60), ForeignKey('amenities.id'),
+                                primary_key=True, nullable=False))
+
 
 class Place(BaseModel, Base):
     """This is the class for Place
@@ -31,8 +37,12 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    amenity_ids = []
     reviews = relationship("Review",
                            cascade="all, delete-orphan", backref="place")
+    amenities = relationship("Amenity",
+                            secondary="place_amenity", viewonly=False)
+
 
     @property
     def reviews(self):
@@ -44,3 +54,19 @@ class Place(BaseModel, Base):
             if value.place_id == self.id:
                 list_tmp.append(value)
         return list_tmp
+
+    @property
+    def amenities(self):
+        """getter amentities
+        """
+        list_tmp = []
+        for id_ in self.amenity_ids:
+            list_tmp.append(models.storage.all().get("Amenity." + id_))
+
+
+    @amenities.setter
+    def amenities(self, obj):
+    """ setter amenities
+    """
+    if type(obj) is "Amenity"):
+        self.amenity_ids.append(obj.id))
