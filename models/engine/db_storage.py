@@ -48,4 +48,10 @@ class DBStorage():
     def delete(self, obj=None):
         """delete from current database session"""
         if obj:
-            self.__session .delete() 
+            self.__session.query(obj).all().delete()
+
+
+    det reload(self):
+        """create all tables in the database"""
+        Session = scoped_session(sessionmaker(bind=engine, expire_on_commit=false))
+        self.__session = Session()
