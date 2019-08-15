@@ -2,8 +2,8 @@
 """This is the base model class for AirBnB"""
 import uuid
 import models
-from datetime import datetime
-from sqlalchemy import Column, ForeignKey, Integer, String
+import datetime
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -14,8 +14,8 @@ class BaseModel:
     for other classes
     """
     id = Column(String(60), primary_key=True, nullable=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow())
+    updated_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow())
 
     def __init__(self, *args, **kwargs):
         """Instantiation of base model class
