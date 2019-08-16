@@ -65,12 +65,12 @@ class Place(BaseModel, Base):
             for amenity in self.amenity_ids:
                 if value.id == amenity:
                     list_amenity.append(value)
-        return list_amenities
+        return list_amenity
 
 
     @amenities.setter
     def amenities(self, obj):
         """ setter amenities
         """
-        if str(type(obj)) is "Amenity":
+        if type(obj) is Amenity:
             self.amenity_ids.append(obj.id)
