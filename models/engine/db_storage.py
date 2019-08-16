@@ -47,7 +47,7 @@ class DBStorage():
                     del item[key_d]
                 tmp_dict2.update({key:item})
         else:
-            clases = [State, City, User, Place, Review]
+            clases = [State, City, User, Place, Review, Amenity]
             for item in clases:
                 states = self.__session.query(item).all()
                 for item2 in states:
