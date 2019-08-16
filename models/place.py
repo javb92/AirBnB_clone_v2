@@ -4,7 +4,8 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
 from sqlalchemy import Table
 from sqlalchemy.orm import relationship
-
+import models
+import os
 
 place_amenity = Table('place_amenity', Base.metadata,
                       Column('place_id', String(60), ForeignKey('places.id'),
@@ -30,8 +31,8 @@ class Place(BaseModel, Base):
         amenity_ids: list of Amenity ids
     """
     __tablename__ = "places"
-    city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
-    user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
+    city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
+    user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
     name = Column(String(128), nullable=False)
     description = Column(String(1024), nullable=True)
     number_rooms = Column(Integer, nullable=False, default=0)
@@ -41,21 +42,22 @@ class Place(BaseModel, Base):
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
     amenity_ids = []
-    reviews = relationship("Review",
-                           cascade="all, delete-orphan", backref="place")
-    amenities = relationship("Amenity",
-                             secondary="place_amenity", viewonly=False)
-
-    @property
-    def reviews(self):
-        """getter
-        """
-        dict_tmp = models.storage.all(models.Review)
-        list_tmp = []
-        for key, value in dict_tmp:
-            if value.place_id == self.id:
-                list_tmp.append(value)
-        return list_tmp
+    if os.getenv("HBNB_TYPE_STORAGE") == "db":
+        reviews = relationship("Review", backref="place")
+        amenities = relationship("Amenity", secondary=place_amenity,
+                                 viewonly=False,
+                                 back_populates="place_amenities")
+    else:
+        @property
+        def reviews(self):
+            """getter
+            """
+            dict_tmp = models.storage.all(models.Review)
+            list_tmp = []
+            for key, value in dict_tmp:
+                if value.place_id == self.id:
+                    list_tmp.append(value)
+            return list_tmp
 
     @property
     def amenities(self):
@@ -63,9 +65,10 @@ class Place(BaseModel, Base):
         """
         list_amenity = []
         dic_tmp = models.storage.all(models.Amenity)
-        for key, value in dict_tmp:
+        for key, value in dic_tmp.items():
             for amenity in self.amenity_ids:
                 if value.id == amenity:
+                    print("AGREGADO REGISTRO")
                     list_amenity.append(value)
         return list_amenity
 
@@ -73,5 +76,5 @@ class Place(BaseModel, Base):
     def amenities(self, obj):
         """ setter amenities
         """
-        if type(obj) is Amenity:
+        if isinstance(obj, Amenity):
             self.amenity_ids.append(obj.id)
