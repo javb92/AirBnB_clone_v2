@@ -25,7 +25,6 @@ class FileStorage:
         Return:
             returns a dictionary of __object
         """
-        print("/// ALL DE FILE STORAGE")
         tmp_dict = {}
         if cls is not None:
             for key, value in self.__objects.items():
