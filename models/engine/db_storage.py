@@ -40,19 +40,17 @@ class DBStorage():
         key_d = "_sa_instance_state"
         tmp_dict2 = {}
         if cls is not None:
-            states = self.__session.query(cls).all()
+            states = self.__session.query(eval(cls)).all()
             for item in states:
-                key = str(cls.__name__) + "." + str(item2.id)
-                if key_d in item.keys():
-                    del item[key_d]
-                tmp_dict2.update({key:item})
+                key = str(eval(cls).__name__) + "." + str(item.id)
+                tmp_dict2.update({key: item})
         else:
             clases = [State, City, User, Place, Review, Amenity]
             for item in clases:
                 states = self.__session.query(item).all()
                 for item2 in states:
                     key = str(item.__name__) + "." + str(item2.id)
-                    tmp_dict2.update({key:item2})
+                    tmp_dict2.update({key: item2})
         return tmp_dict2
 
     def new(self, obj):
@@ -70,13 +68,13 @@ class DBStorage():
             session.delete(dele)
             self.save()
 
-
     def reload(self):
         """create all tables in the database"""
         Base.metadata.create_all(self.__engine)
-        self.__session = scoped_session(sessionmaker(bind=self.__engine, expire_on_commit=False))()
+        self.__session = scoped_session(sessionmaker(bind=self.__engine,
+                                                     expire_on_commit=False))()
 
     def close(self):
         """close
         """
-        self.__session.remove()
+        self.__session.close()
