@@ -2,7 +2,7 @@
 # task 0
 """module web_flask
 """
-from flask import Flask
+from flask import Flask, escape
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
@@ -19,7 +19,8 @@ def hello2():
 
 @app.route('/c/<text>')
 def hello3(text):
-    return 'C %s' % text
+    text = text.replace("_", " ")
+    return 'C %s' % escape(text)
 
 
 if __name__ == '__main__':
