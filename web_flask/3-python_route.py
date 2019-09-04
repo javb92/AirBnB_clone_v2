@@ -25,7 +25,6 @@ def hello3(text):
 
 @app.route('/python/<text>')
 def hello4(text):
-    text = "is cool"
     text = text.replace("_", " ")
     return 'Python %s' % escape(text)
 
