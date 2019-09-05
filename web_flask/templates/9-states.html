@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<HTML lang="en">
+    <HEAD>
+        <TITLE>HBNB</TITLE>
+    </HEAD>
+    <BODY>
+            {%- set ns = namespace(foo=false) -%}
+	    {% for key, value in name.items()|sort(attribute='1.name') -%}
+	      {% if value.id == ident %}
+                {% set ns.foo = True %}
+	        <H1>States: {{ value.name }}</H1>
+                <H3>Cities:</H3>
+	        <UL>
+                    {% for key2, value2 in city.items()|sort(attribute='1.name') -%}
+	              {% if value2.state_id == value.id %}
+                        <LI>{{ value2.id }}: <B>{{ value2.name }}</B></LI>
+	              {% endif %}
+                    {%- endfor %}
+	        </UL>
+	      {% elif loop.index == name|length and ns.foo == False %}
+
+		<H1>Not found! {{ testing }}</H1>
+	      {% endif %}
+	    {%- endfor %}
+    </BODY>
+</HTML>
